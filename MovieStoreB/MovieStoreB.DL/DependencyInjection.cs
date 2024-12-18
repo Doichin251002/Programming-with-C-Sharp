@@ -6,7 +6,7 @@ namespace MovieStoreB.DL
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection
+        public static IServiceCollection 
             AddDataDependencies(
                 this IServiceCollection services)
         {
