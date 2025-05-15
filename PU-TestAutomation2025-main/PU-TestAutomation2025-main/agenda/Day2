@@ -1,0 +1,132 @@
+Summary of the day.
+
+Task:
+* Create an empty Nunit Test Project
+* HttpClient Class - Provides a class for sending HTTP requests and receiving HTTP responses from a resource identified by a URI.   
+** Create a basic structure - initialize the HttpClient in the preconditions and dispose of it in the after method.
+* GET all users. - Assert the status code
+* Create User model -> POCO.
+* Create Request / Response model
+
+Additional resources:
+https://docs.nunit.org/articles/nunit/writing-tests/attributes.html
+
+🔹 [TestFixture]
+Маркира клас като тестов клас, което позволява на NUnit да го разпознае и изпълни тестовете в него.
+
+Без този атрибут NUnit няма да открие тестовите методи в класа.
+
+🔹 [SetUp]
+Маркира метод, който се изпълнява преди всеки тест.
+
+Използва се за инициализация, например създаване на HttpClient, базови настройки и др.
+[SetUp]
+public void Setup()
+{
+    _httpClient = new HttpClient();
+}
+🔹 [TearDown]
+Маркира метод, който се изпълнява след всеки тест.
+
+Използва се за освобождаване на ресурси, като затваряне на HttpClient.
+[TearDown]
+public void Teardown()
+{
+    _httpClient.Dispose();
+}
+🔹 [Test]
+Маркира метод като тестов метод.
+
+NUnit ще го изпълни автоматично при стартиране на тестовете.
+[Test]
+public async Task GetUsers_ShouldReturnSuccess()
+{
+    HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl);
+    Assert.That(response.IsSuccessStatusCode, Is.True);
+}
+🔹 [TestCase]
+Позволява параметризирани тестове – т.е. да изпълняваме един и същ тест с различни входни данни.
+
+[TestCase(1)]
+[TestCase(2)]
+[TestCase(3)]
+public async Task GetUserById_ShouldReturnSuccess(int userId)
+{
+    HttpResponseMessage response = await _httpClient.GetAsync($"{BaseUrl}/{userId}");
+    Assert.That(response.IsSuccessStatusCode, Is.True);
+}
+🔹 [Ignore]
+Пропуска изпълнението на даден тест (например, ако е временно нефункционален).
+
+[Test]
+[Ignore("This test is not ready yet.")]
+public void IncompleteTest()
+{
+    Assert.Fail("Not implemented.");
+}
+🔹 [OneTimeSetUp]
+Изпълнява се само веднъж преди стартирането на всички тестове в класа.
+
+Подходящо за създаване на общи ресурси.
+
+[OneTimeSetUp]
+public void OneTimeSetup()
+{
+    _httpClient = new HttpClient();
+}
+🔹 [OneTimeTearDown]
+Изпълнява се само веднъж след изпълнението на всички тестове в класа.
+
+Подходящо за освобождаване на ресурси.
+
+[OneTimeTearDown]
+public void OneTimeTeardown()
+{
+    _httpClient.Dispose();
+}
+
+📌 Какво са Asserts в автоматизираното тестване?
+Assertions (твърдения) са проверки, които валидират дали дадено условие е изпълнено по време на теста.
+Ако проверката не успее, тестът се счита за неуспешен (failed).
+
+Пример:
+
+Ако получим HTTP статус 200 OK, тестът е успешен.
+
+Ако получим 500 Internal Server Error, тестът проваля теста.
+
+📌 Как става assert в NUnit?
+В NUnit се използва Assert класът, който предоставя различни методи за проверка.
+
+✅ Примерни NUnit asserts
+1️⃣ Проверка на true / false условия:
+
+Assert.That(5 > 3, Is.True);  // ✅ Успех
+Assert.That(5 < 3, Is.False); // ✅ Успех
+2️⃣ Сравняване на числа и обекти:
+
+Assert.That(10, Is.EqualTo(10)); // ✅ Успех
+Assert.That("Hello", Is.Not.EqualTo("World")); // ✅ Успех
+3️⃣ Проверка на null / not null:
+
+object obj = null;
+Assert.That(obj, Is.Null); // ✅ Успех
+
+object obj2 = new object();
+Assert.That(obj2, Is.Not.Null); // ✅ Успех
+4️⃣ Проверка на колекции:
+
+List<int> numbers = new List<int> { 1, 2, 3 };
+Assert.That(numbers, Is.Not.Empty); // ✅ Успех
+Assert.That(numbers, Has.Member(2)); // ✅ Успех (проверява дали 2 съществува в списъка)
+
+📌 Какво е POCO?
+POCO (Plain Old CLR Object) е обикновен C# клас, който не наследява или не зависи от специфични .NET фреймуърк класове. Използва се най-често за моделиране на данни.
+
+📌 Serialization & Deserialization
+Serialization – процесът на преобразуване на обект в JSON, XML или друг формат за съхранение/пренос.
+
+Deserialization – процесът на преобразуване на JSON/XML обратно в C# обект.
+
+🔹 Какво е CLR (Common Language Runtime)?
+CLR (Common Language Runtime) е сърцето на .NET средата. Това е изпълнителната среда, която управлява изпълнението на .NET програми.

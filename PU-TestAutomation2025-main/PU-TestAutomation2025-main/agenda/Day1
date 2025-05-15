@@ -1,0 +1,116 @@
+Summary of the day.
+
+Introduction.
+What is this course for?
+Course Agenda
+- Software testing fundamentals
+- Mandatory tools for the course
+- C# Fundamentals exercises
+- BDD explained
+- Creating a Basic Test Automation Framework
+- Final Task
+
+At the end of the day one:
+
+What is Software testing?
+A method to check whether the actual software product matches expected requirements and to ensure that software product is a defect free.
+
+What is Verification?
+Are we building the product right?
+Verification is static testing. It includes documents, design, code and programs.
+
+What is Validation?
+Are we building the right product?
+Validation is a process in which the requirements of the customer are actually met by the software functionality. It includes testing and validating the actual product.
+
+The main types of tests that can be conducted are Functional and Non-functional testing.
+
+What is Git?
+- Local and remote repositories
+- Basic git commands
+- Commiting a change and pushing to the remote repository
+
+Summary of the day.
+
+h3. API definition (Basic)
+An application programming interface (API) is a way for two or more computer programs to communicate with each other. It is a type of software interface, offering a service to other pieces of software. In the scope of this course we will focus on the Web API.
+
+h3. Web API
+Web APIs are a service accessed from client devices (Mobile Phones, Laptop, etc.) to a web server using the Hypertext Transfer Protocol (HTTP). 
+Client devices send a request in the form of an HTTP request, and are met with a response message usually in JavaScript Object Notation (JSON) or Extensible Markup Language (XML) format. 
+Developers typically use Web APIs to query a server for a specific set of data from that server.
+
+
+In our case we we are calling them microservices and we are using them for most of our needs. Decomposing the monolith applications to multiple microservices that are communicating over HTTP.
+
+h3. HTTP protocol (Source Wikipedia)
+The Hypertext Transfer Protocol (HTTP) is an application layer protocol which is considered as the foundation of data communication for the World Wide Web.
+
+Request / Response protocol - A contract between server and client.
+
+HTTP protocol allows extensions - for instance the response content, error messages etc.
+
+HTTP Methods
+Methods are also called Verbs.
+[GET, HEAD, POST, PUT, PATCH, DELETE, CONNECT, OPTIONS, TRACE]
+
+HTTP Response status codes
+1XX (informational)
+The request was received, continuing process.
+2XX (successful)
+The request was successfully received, understood, and accepted.
+3XX (redirection)
+Further action needs to be taken in order to complete the request.
+4XX (client error)
+The request contains bad syntax or cannot be fulfilled.
+5XX (server error)
+The server failed to fulfill an apparently valid request.
+
+HTTP reponse status codes - expanation of the most used status codes.
+
+200 OK
+Standard response for successful HTTP requests. The actual response will depend on the request method used. In a GET request, the response will contain an entity corresponding to the requested resource. In a POST request, the response will contain an entity describing or containing the result of the action.
+
+201 Created
+The request has been fulfilled, resulting in the creation of a new resource.
+
+204 No Content
+The server successfully processed the request, and is not returning any content.
+—------------------------------------
+400 Bad Request
+The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, size too large, invalid request message framing, or deceptive request routing).
+
+401 Unauthorized
+Similar to 403 Forbidden, but specifically for use when authentication is required and has failed or has not yet been provided. The response must include a WWW-Authenticate header field containing a challenge applicable to the requested resource. See Basic access authentication and Digest access authentication. 401 semantically means "unauthorised", the user does not have valid authentication credentials for the target resource.
+Some sites incorrectly issue HTTP 401 when an IP address is banned from the website (usually the website domain) and that specific address is refused permission to access a website.
+
+402 Payment Required
+Reserved for future use. The original intention was that this code might be used as part of some form of digital cash or micropayment scheme, as proposed, for example, by GNU Taler, but that has not yet happened, and this code is not widely used. Google Developers API uses this status if a particular developer has exceeded the daily limit on requests. Sipgate uses this code if an account does not have sufficient funds to start a call. Shopify uses this code when the store has not paid their fees and is temporarily disabled. Stripe uses this code for failed payments where parameters were correct, for example blocked fraudulent payments.
+
+403 Forbidden
+The request contained valid data and was understood by the server, but the server is refusing action. This may be due to the user not having the necessary permissions for a resource or needing an account of some sort, or attempting a prohibited action (e.g. creating a duplicate record where only one is allowed). This code is also typically used if the request provided authentication by answering the WWW-Authenticate header field challenge, but the server did not accept that authentication. The request should not be repeated.
+
+404 Not Found
+The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible.
+
+405 Method Not Allowed
+A request method is not supported for the requested resource; for example, a GET request on a form that requires data to be presented via POST, or a PUT request on a read-only resource.
+
+415 Unsupported Media Type
+The request entity has a media type which the server or resource does not support. For example, the client uploads an image as image/svg+xml, but the server requires that images use a different format.
+
+422 Unprocessable Entity
+The request was well-formed but was unable to be followed due to semantic errors.
+—--------------------------
+500 Internal Server Error
+A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+
+501 Not Implemented
+The server either does not recognize the request method, or it lacks the ability to fulfil the request. Usually this implies future availability (e.g., a new feature of a web-service API).
+
+502 Bad Gateway
+The server was acting as a gateway or proxy and received an invalid response from the upstream server.
+
+503 Service Unavailable
+The server cannot handle the request (because it is overloaded or down for maintenance). Generally, this is a temporary state.
+

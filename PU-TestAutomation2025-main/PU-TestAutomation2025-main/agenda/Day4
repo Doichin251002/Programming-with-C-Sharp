@@ -1,0 +1,14 @@
+1. Create a User
+2. Modify the code to a reusable method
+    2.1 Create a helper class
+    2.2 Create a helper method with parameters - name and email.
+        - Class for the HttpClient initialization
+            - method for GET
+            - method for POST to create a new user
+        - Replace the redundent code in the Test class
+
+    2.2 OPTIONAL - the method to be with one parameter and create an internal logic to build an email from the name.
+3. Create GET/PUT/DELETE user by specific ID
+
+NUnit - annotations explained.
+Example can be found in src/Examples/Base/NUnitExamples/MyTestClass.cs

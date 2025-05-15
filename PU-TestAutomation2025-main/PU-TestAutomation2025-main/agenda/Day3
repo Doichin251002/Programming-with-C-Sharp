@@ -1,0 +1,98 @@
+﻿Summary of the day.
+
+How to use Postman and Postman collections.
+
+Task:
+* Postman 
+	* Collections & Environments
+	* Scripts
+	* Assertions - https://learning.postman.com/docs/tests-and-scripts/write-scripts/test-examples/
+This is optional, but nice to have as expertise.
+В Postman, assert скриптовете (наричани още tests) се използват за автоматично проверяване на отговорите от API заявките. Това са JavaScript скриптове, които пишеш в таба "Tests" на дадена заявка, и те се изпълняват след като заявката е направена и е получен отговор.
+
+📌 Основна структура
+javascript
+pm.test("Описание на теста", function () {
+    pm.response.to.have.status(200); // примерен assert
+});
+🧪 Най-често използвани assertions:
+✅ Статус код:
+javascript
+Copy
+Edit
+pm.test("Статус кодът трябва да е 200", function () {
+    pm.response.to.have.status(200);
+});
+✅ Проверка на JSON стойност:
+javascript
+
+pm.test("Името трябва да е 'John'", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.name).to.eql("John");
+});
+✅ Проверка за съдържание в тялото на отговора:
+javascript
+
+pm.test("Отговорът съдържа думата 'успех'", function () {
+    pm.expect(pm.response.text()).to.include("успех");
+});
+✅ Проверка за време на отговор:
+javascript
+
+pm.test("Времето за отговор е под 500ms", function () {
+    pm.expect(pm.response.responseTime).to.be.below(500);
+});
+✅ Проверка на headers:
+javascript
+
+pm.test("Content-Type е application/json", function () {
+    pm.response.to.have.header("Content-Type", "application/json");
+});
+🧠 Допълнително
+pm.environment.set("key", value) и pm.globals.set() записват стойности.
+
+pm.test("Списъкът съдържа поне един елемент", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.length).to.be.above(0);
+});
+
+* POST Create an user
+    * Add Authorization
+    * Build a Request Body
+
+Обяснение:
+🧱 1. System.Text.Json.JsonSerializer.Serialize(requestBody)
+Това превръща обект в JSON низ (string).
+🧱 2. new StringContent(json, Encoding.UTF8, "application/json")
+✅ Какво е StringContent?
+StringContent е клас, който представлява текстово съдържание, 
+което искаме да изпратим в HTTP заявка – например в тялото (body) на POST заявка.
+Той наследява HttpContent, и се използва за изпращане на данни като:
+JSON
+XML
+Plain Text
+
+🧠 Аргументи:
+new StringContent(json, Encoding.UTF8, "application/json")
+json – самият текст, който искаме да изпратим (в твоя случай JSON).
+Encoding.UTF8 – посочваме какъв encoding използваме. Почти винаги се използва UTF-8.
+"application/json" – това казва на сървъра: "Изпращам JSON". Това е MIME типът.
+
+📦 Целият смисъл:
+var json = JsonSerializer.Serialize(requestBody);
+var content = new StringContent(json, Encoding.UTF8, "application/json");
+👉 Превръща C# обект в JSON и го опакова като HTTP съдържание, готово за изпращане с POST.
+
+💡 Защо е необходимо?
+HttpClient.PostAsync очаква HttpContent обект. Ако искаш да изпратиш JSON в POST, трябва да му подадеш StringContent със:
+
+съдържанието (JSON)
+encoding
+MIME тип (application/json)
+
+📌 Пример как изглежда цялата заявка:
+var response = await httpClient.PostAsync("https://example.com/api/users", content);
+Това ще изпрати HTTP заявка с:
+POST /api/users
+Content-Type: application/json
+Body

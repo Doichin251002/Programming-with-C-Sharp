@@ -10,8 +10,6 @@ namespace BookStore.HealthChecks
         {
             var isHealthy = true;
 
-            // ...
-
             if (isHealthy)
             {
                 return Task.FromResult(

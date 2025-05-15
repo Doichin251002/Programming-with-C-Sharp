@@ -1,0 +1,27 @@
+Create a test project for the following system under test
+https://gorest.co.in/
+
+The task should be completed in C# and NUnit.
+Assertions should be done with FluentAssertions NUGET.
+https://fluentassertions.com/introduction
+
+The minimum requirement is to have at least one test case per endpoint.
+GET all users
+GET /public/v2/users
+
+GET a specific user
+GET /public/v2/users/{user ID}}
+
+CREATE an user
+POST /public/v2/users
+
+UPDATE an user
+PUT|PATCH /public/v2/users/{user ID}
+
+DELETE an user
+DELETE /public/v2/users/{user ID}
+
+- The test cases should assert the HTTP status code and Response content (if the endpoint has a response content)
+- The test cases should be re-runable without manual change of the user's data(NO HARDCODED VALUES)
+
+The task should be commited in a github repository.
