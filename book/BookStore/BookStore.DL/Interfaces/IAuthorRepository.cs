@@ -1,19 +1,20 @@
-﻿using BookStore.Models.DTO;
+﻿using BookStore.DL.Cache;
+using BookStore.Models.POCO;
 
 namespace BookStore.DL.Interfaces
 {
-    public interface IAuthorRepository
+    public interface IAuthorRepository : ICacheRepository<string, Author>
     {
-        void AddAuthor(Author author);
+        Task<Author?> AddAuthor(Author author);
 
-        Author? GetAuthorById(string id);
+        Task<Author?> GetAuthorById(string id);
 
-        IEnumerable<Author> GetAuthorsByIds(IEnumerable<string> authorsIds);
+        Task<IEnumerable<Author>> GetAuthorsByIds(IEnumerable<string> authorsIds);
 
-        List<Author> GetAllAuthors();
+        Task<List<Author>> GetAllAuthors();
 
-        void UpdateAuthor(Author author);
+        Task<Author?> UpdateAuthor(Author author);
 
-        void DeleteAuthor(string id);
+        Task DeleteAuthor(string id);
     }
 }

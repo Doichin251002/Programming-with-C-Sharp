@@ -17,11 +17,11 @@ namespace BookStore.BL.Services
             _authorRepository = authorRepository;
         }
 
-        public List<BookView> GetDetailedBooks()
+        public async Task<List<BookView>> GetDetailedBooks()
         {
             var result = new List<BookView>();
 
-            var books = _bookService.GetAll();
+            var books = await _bookService.GetAll();
 
             foreach (var book in books)
             {
@@ -30,7 +30,7 @@ namespace BookStore.BL.Services
                     BookId = book.Id,
                     BookTitle = book.Title,
                     BookYear = book.Year,
-                    Authors = _authorRepository.GetAuthorsByIds(book.Authors)
+                    Authors = await _authorRepository.GetAuthorsByIds(book.Authors)
                 };
 
                 result.Add(bookView);

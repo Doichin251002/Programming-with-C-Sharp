@@ -1,6 +1,6 @@
 ﻿using BookStore.BL.Services;
 using BookStore.DL.Interfaces;
-using BookStore.Models.DTO;
+using BookStore.Models.POCO;
 using Moq;
 
 namespace BookStore.Tests.AuthorTests

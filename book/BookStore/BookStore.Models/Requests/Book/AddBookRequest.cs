@@ -7,5 +7,8 @@
         public int Year { get; set; }
 
         public List<string> Authors { get; set; }
+
+        public DateTime DateInserted { get; set; }
+
     }
 }

@@ -1,4 +1,5 @@
 using BookStore.BL;
+using BookStore.DL;
 using BookStore.HealthChecks;
 using BookStore.MapsterConfig;
 using BookStore.ServiceExtensions;
@@ -28,8 +29,8 @@ namespace BookStore
 
             builder.Services
                 .AddConfigurations(builder.Configuration)
-                .RegisterDataLayer()
-                .RegisterBusinessLayer();
+                .AddDataDependencies(builder.Configuration)
+                .AddBusinessDependencies();
 
             MapsterConfiguration.Configure();
             builder.Services.AddMapster();

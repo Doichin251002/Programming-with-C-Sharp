@@ -1,0 +1,6 @@
+@ExternalApiGateway_HostAddress = http://localhost:5193
+
+GET {{ExternalApiGateway_HostAddress}}/location/
+Accept: application/json
+
+###

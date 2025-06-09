@@ -1,6 +1,6 @@
 ﻿using BookStore.DL.Interfaces;
 using BookStore.Models.Configurations;
-using BookStore.Models.DTO;
+using BookStore.Models.POCO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -28,7 +28,7 @@ namespace BookStore.DL.Repositories
                 $"{nameof(Author)}s");
         }
 
-        public void AddAuthor(Author author)
+        public async Task<Author?> AddAuthor(Author author)
         {
             if (author == null)
             {
@@ -44,25 +44,26 @@ namespace BookStore.DL.Repositories
 
             try
             {
-                _authors.InsertOne(author);
+                await _authors.InsertOneAsync(author);
                 _logger.LogInformation($"Author with ID {author.Id} successfully added.");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"An error occurred while adding the author: {ex.Message}");
-                return;
             }
+
+            return author;
         }
 
-        public Author? GetAuthorById(string id)
+        public async Task<Author?> GetAuthorById(string id)
         {
             if (string.IsNullOrEmpty(id)) return null;
 
-            return _authors.Find(a => a.Id == id)
-                .FirstOrDefault();
+            var result = await _authors.FindAsync(a => a.Id == id);
+            return await result.FirstOrDefaultAsync();
         }
 
-        public IEnumerable<Author> GetAuthorsByIds(IEnumerable<string> authorsIds)
+        public async Task<IEnumerable<Author>> GetAuthorsByIds(IEnumerable<string> authorsIds)
         {
             if (authorsIds == null || !authorsIds.Any())
             {
@@ -70,33 +71,35 @@ namespace BookStore.DL.Repositories
             }
 
             var filter = Builders<Author>.Filter.In(a => a.Id, authorsIds);
-            var authors = _authors.Find(filter).ToList();
+            var authors = await _authors.FindAsync(filter);
+            var result = await authors.ToListAsync();
 
-            if (authors == null || !authors.Any())
+            if (result == null || !result.Any())
             {
                 throw new KeyNotFoundException("No authors found with the provided IDs.");
             }
 
-            return authors;
+            return result;
         }
 
-        public List<Author> GetAllAuthors()
+        public async Task<List<Author>> GetAllAuthors()
         {
-            return _authors.Find(a => true).ToList();
+            var result = await _authors.FindAsync(a => true);
+            return await result.ToListAsync();
         }
 
-        public void UpdateAuthor(Author author)
+        public async Task<Author?> UpdateAuthor(Author author)
         {
             if (author == null)
             {
                 _logger.LogError("Author is null");
-                return;
+                return null;
             }
 
             if (string.IsNullOrEmpty(author.Id))
             {
                 _logger.LogError("Author ID is null or empty");
-                return;
+                return null;
             }
 
             var filter = Builders<Author>.Filter.Eq(a => a.Id, author.Id);
@@ -105,23 +108,26 @@ namespace BookStore.DL.Repositories
 
             try
             {
-                var result = _authors.UpdateOne(filter, update);
+                var result = await _authors.UpdateOneAsync(filter, update);
 
                 if (result.ModifiedCount == 0)
                 {
                     _logger.LogWarning($"Author with ID {author.Id} not found or no changes made.");
-                    return;
                 }
-
-                _logger.LogInformation($"Successfully updated author with ID {author.Id}");
+                else
+                {
+                    _logger.LogInformation($"Successfully updated author with ID {author.Id}");
+                }
             }
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error updating author with ID {author.Id} - {e.Message}");
             }
+
+            return author;
         }
 
-        public void DeleteAuthor(string id)
+        public async Task DeleteAuthor(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -133,7 +139,7 @@ namespace BookStore.DL.Repositories
 
             try
             {
-                var result = _authors.DeleteOne(filter);
+                var result = await _authors.DeleteOneAsync(filter);
 
                 if (result.DeletedCount == 0)
                 {

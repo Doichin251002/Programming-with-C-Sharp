@@ -1,5 +1,5 @@
 using BookStore.BL.Interfaces;
-using BookStore.Models.DTO;
+using BookStore.Models.POCO;
 using BookStore.Models.Requests.Book;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +14,7 @@ namespace BookStore.Controllers
         private readonly IMapper _mapper;
         private readonly ILogger<BooksController> _logger;
 
-        public BooksController(
-            IBookService bookService,
-            IMapper mapper,
-            ILogger<BooksController> logger)
+        public BooksController(IBookService bookService, IMapper mapper, ILogger<BooksController> logger)
         {
             _bookService = bookService;
             _mapper = mapper;
@@ -25,7 +22,7 @@ namespace BookStore.Controllers
         }
 
         [HttpPost("AddBook")]
-        public IActionResult Add(AddBookRequest book)
+        public async Task<IActionResult> Add(AddBookRequest book)
         {
             try
             {
@@ -36,7 +33,7 @@ namespace BookStore.Controllers
                     return BadRequest("No valid data.");
                 }
 
-                _bookService.Add(bookDto);
+                await _bookService.Add(bookDto);
             }
             catch (Exception ex)
             {
@@ -50,9 +47,9 @@ namespace BookStore.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("GetAllBooks")]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var result = _bookService.GetAll();
+            var result = await _bookService.GetAll();
 
             if (result == null || result.Count == 0)
             {
@@ -66,7 +63,7 @@ namespace BookStore.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetById(string id)
+        public async Task<IActionResult> GetById(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -75,7 +72,7 @@ namespace BookStore.Controllers
 
             try
             {
-                var result = _bookService.GetById(id);
+                var result = await _bookService.GetById(id);
 
                 if (result == null)
                 {
@@ -94,7 +91,7 @@ namespace BookStore.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Update(UpdateBookRequest book)
+        public async Task<IActionResult> Update(UpdateBookRequest book)
         {
             var bookDto = _mapper.Map<Book>(book);
 
@@ -110,14 +107,14 @@ namespace BookStore.Controllers
 
             try
             {
-                var existingBook = _bookService.GetById(bookDto.Id);
+                var existingBook = await _bookService.GetById(bookDto.Id);
 
                 if (existingBook == null)
                 {
                     return NotFound($"Book with ID {book.Id} not found.");
                 }
 
-                _bookService.Update(bookDto);
+                await _bookService.Update(bookDto);
 
             }
             catch (Exception ex)
@@ -130,7 +127,7 @@ namespace BookStore.Controllers
         }
 
         [HttpDelete("DeleteBook")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -139,7 +136,7 @@ namespace BookStore.Controllers
 
             try
             {
-                _bookService.Delete(id);
+                await _bookService.Delete(id);
             }
             catch (Exception)
             {
@@ -147,6 +144,21 @@ namespace BookStore.Controllers
             }
 
             return Ok($"Book with {id} deleted successfully.");
+        }
+
+        [HttpGet("GetLocations")]
+        public async Task<IActionResult> GetLocations()
+        {
+            try
+            {
+                var result = await _bookService.GetLocations();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Cannot fetch locations. {ex.Message} | {ex.StackTrace}");
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }

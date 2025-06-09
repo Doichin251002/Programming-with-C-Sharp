@@ -2,7 +2,7 @@
 
 namespace BookStore.ServiceExtensions
 {
-    public static class ServiceConfigurationsExtensions
+    public static class DependencyInjection
     {
         public static IServiceCollection AddConfigurations(
             this IServiceCollection services,

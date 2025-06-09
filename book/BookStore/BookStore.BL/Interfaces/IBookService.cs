@@ -1,18 +1,20 @@
-﻿using BookStore.Models.DTO;
+﻿using BookStore.Models.POCO;
 
 namespace BookStore.BL.Interfaces
 {
     public interface IBookService
     {
-        void Add(Book book);
+        Task<Book?> Add(Book book);
 
-        Book? GetById(string id);
+        Task<Book?> GetById(string id);
 
-        List<Book> GetAll();
+        Task<List<Book>> GetAll();
 
-        void Update(Book book);
+        Task<Book?> Update(Book book);
 
-        void Delete(string id);
+        Task Delete(string id);
+
+        Task<string> GetLocations();
 
     }
 }

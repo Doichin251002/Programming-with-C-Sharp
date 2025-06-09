@@ -1,47 +1,55 @@
 ﻿using BookStore.BL.Interfaces;
 using BookStore.DL.Interfaces;
-using BookStore.Models.DTO;
+using BookStore.Models.POCO;
+using Microsoft.Extensions.Logging;
 
 namespace BookStore.BL.Services
 {
     public class BookService : IBookService
     {
+        private readonly ILogger<BookService> _logger;
         private readonly IBookRepository _bookRepository;
         private readonly IAuthorRepository _authorRepository;
+        private readonly IStoreLocationGateway _locationGateway;
 
-        public BookService(IBookRepository bookRepository, IAuthorRepository authorRepository)
+        public BookService(ILogger<BookService> logger, IBookRepository bookRepository, IAuthorRepository authorRepository, IStoreLocationGateway locationGateway)
         {
+            _logger = logger;
             _bookRepository = bookRepository;
             _authorRepository = authorRepository;
+            _locationGateway = locationGateway;
         }
 
-        public void Add(Book? book)
+        public async Task<Book?> Add(Book? book)
         {
-            if (book is null) return;
+            if (book is null)
+            {
+                throw new ArgumentNullException(nameof(book), "Book cannot be null.");
+            };
 
-            if (!IsExistingAuthor(book))
+            if (!await IsExistingAuthor(book))
             {
                 throw new KeyNotFoundException($"Author with ID {book.Authors.First()} does not exist");
             }
 
-            bool IsExist = IsExistBook(book);
+            bool IsExist = await IsExistBook(book);
 
             if (IsExist)
             {
                 throw new InvalidOperationException($"Book with title {book.Title} already exists.");
             }
 
-            _bookRepository.AddBook(book);
+            return await _bookRepository.AddBook(book);
         }
 
-        public Book? GetById(string id)
+        public async Task<Book?> GetById(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
                 throw new ArgumentException("Book ID cannot be null or empty.", nameof(id));
             }
 
-            var book = _bookRepository.GetBookById(id);
+            var book = await _bookRepository.GetBookById(id);
 
             if (book == null)
             {
@@ -51,12 +59,12 @@ namespace BookStore.BL.Services
             return book;
         }
 
-        public List<Book> GetAll()
+        public async Task<List<Book>> GetAll()
         {
-            return _bookRepository.GetAllBooks();
+            return await _bookRepository.GetAllBooks();
         }
 
-        public void Update(Book book)
+        public async Task<Book?> Update(Book book)
         {
             if (book == null)
             {
@@ -75,15 +83,15 @@ namespace BookStore.BL.Services
                 throw new KeyNotFoundException($"Book with ID {book.Id} does not exist");
             }
 
-            if (!IsExistingAuthor(book))
+            if (!await IsExistingAuthor(book))
             {
                 throw new KeyNotFoundException($"Authors with ID {book.Authors.First()} not found.");
             }
 
-            _bookRepository.UpdateBook(book);
+            return await _bookRepository.UpdateBook(book);
         }
 
-        public void Delete(string id)
+        public async Task Delete(string id)
         {
             var book = _bookRepository.GetBookById(id);
 
@@ -92,12 +100,25 @@ namespace BookStore.BL.Services
                 throw new KeyNotFoundException($"Book with ID {id} does not exist");
             }
 
-            _bookRepository.DeleteBook(id);
+            await _bookRepository.DeleteBook(id);
         }
 
-        private bool IsExistBook(Book? book)
+        public async Task<string> GetLocations()
         {
-            var allBooks = _bookRepository.GetAllBooks();
+            try
+            {
+                return await _locationGateway.GetAllLocations();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Cannot fetch bikes. {ex.Message}");
+                throw;
+            }
+        }
+
+        private async Task<Boolean> IsExistBook(Book? book)
+        {
+            var allBooks = await _bookRepository.GetAllBooks();
 
             if (allBooks is not null && allBooks.Any())
             {
@@ -105,7 +126,7 @@ namespace BookStore.BL.Services
                 {
                     bool matchingTitle = b.Title == book.Title;
                     bool matchingYear = b.Year == book.Year;
-                    bool matchingAuthor = IsExistingAuthor(book);
+                    bool matchingAuthor = await IsExistingAuthor(book);
 
                     if (matchingTitle && matchingYear && matchingAuthor)
                     {
@@ -117,25 +138,15 @@ namespace BookStore.BL.Services
             return false;
         }
 
-        private bool IsExistingAuthor(Book book)
+        private async Task<bool> IsExistingAuthor(Book book)
         {
-            var allAuthorIds = _authorRepository.GetAllAuthors().Select(a => a.Id).ToList();
+            if (book?.Authors == null || !book.Authors.Any()) return false;
 
-            if (allAuthorIds is not null && allAuthorIds.Any())
-            {
-                foreach (var authorId in allAuthorIds)
-                {
-                    foreach (var bookAuthorId in book.Authors)
-                    {
-                        if (bookAuthorId.Equals(authorId))
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
+            var allAuthorIds = (await _authorRepository.GetAllAuthors())
+                .Select(a => a.Id)
+                .ToHashSet();
 
-            return false;
+            return book.Authors.Any(id => allAuthorIds.Contains(id));
         }
     }
 }

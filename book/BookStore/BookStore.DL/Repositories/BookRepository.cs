@@ -1,6 +1,6 @@
 ﻿using BookStore.DL.Interfaces;
 using BookStore.Models.Configurations;
-using BookStore.Models.DTO;
+using BookStore.Models.POCO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -27,64 +27,38 @@ namespace BookStore.DL.Repositories
                 $"{nameof(Book)}s");
         }
 
-        public void AddBook(Book book)
+        public async Task<Book?> AddBook(Book book)
         {
-            if (book == null)
-            {
-                _logger.LogError("Attempted to add a null book.");
-                return;
-            }
+            await _books.InsertOneAsync(book);
+            _logger.LogInformation($"Successfully added book with ID: {book.Id}, Title: {book.Title}");
 
-            if (string.IsNullOrWhiteSpace(book.Title))
-            {
-                _logger.LogError("Attempted to add a book with an empty or null title.");
-                return;
-            }
-
-            if (book.Year <= 0)
-            {
-                _logger.LogError("Attempted to add a book with an invalid year.");
-                return;
-            }
-
-            book.Id = Guid.NewGuid().ToString();
-
-            try
-            {
-                _books.InsertOne(book);
-                _logger.LogInformation($"Successfully added book with ID: {book.Id}, Title: {book.Title}");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error adding book. Title: {book.Title}. Exception: {ex.Message}");
-            }
+            return book;
         }
 
-        public Book? GetBookById(string id)
+        public async Task<Book?> GetBookById(string id)
         {
             if (string.IsNullOrEmpty(id)) return null;
 
-            return _books.Find(m => m.Id.Equals(id))
-                .FirstOrDefault();
+            var result = await _books.FindAsync(m => m.Id.Equals(id));
+            return await result.FirstOrDefaultAsync();
         }
 
-        public List<Book> GetAllBooks()
+        public async Task<List<Book>> GetAllBooks()
         {
-            return _books.Find(book => true).ToList();
+            return await _books.Find(book => true).ToListAsync();
         }
 
-        public void UpdateBook(Book book)
+        public async Task<Book?> UpdateBook(Book book)
         {
             if (book == null)
             {
                 _logger.LogError("Book is null");
-                return;
             }
+
             else if (string.IsNullOrEmpty(book.Id))
             {
                 string id = book.Id;
                 _logger.LogError($"Book with id {id} not found");
-                return;
             }
 
             var filter = Builders<Book>.Filter.Eq(b => b.Id, book.Id);
@@ -96,7 +70,7 @@ namespace BookStore.DL.Repositories
                     .Set(b => b.Year, book.Year)
                     .Set(b => b.Authors, book.Authors);
 
-                var result = _books.UpdateOne(filter, update);
+                var result = await _books.UpdateOneAsync(filter, update);
 
                 if (result.ModifiedCount > 0)
                 {
@@ -110,10 +84,13 @@ namespace BookStore.DL.Repositories
             catch (Exception e)
             {
                 _logger.LogError(e, $"Error updating book {book.Id}: {e.Message} - {e.StackTrace}");
+                throw;
             }
+
+            return book;
         }
 
-        public void DeleteBook(string id)
+        public async Task DeleteBook(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -124,7 +101,7 @@ namespace BookStore.DL.Repositories
             {
                 var filter = Builders<Book>.Filter.Eq(b => b.Id, id);
 
-                var deletedbook = _books.FindOneAndDelete(filter);
+                var deletedbook = await _books.FindOneAndDeleteAsync(filter);
 
                 if (deletedbook != null)
                 {
@@ -138,6 +115,7 @@ namespace BookStore.DL.Repositories
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error occurred while deleting book with ID: {id}");
+                throw;
             }
         }
 

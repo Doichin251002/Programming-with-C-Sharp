@@ -1,4 +1,4 @@
-﻿using BookStore.Models.DTO;
+﻿using BookStore.Models.POCO;
 using BookStore.Models.Requests.Author;
 using BookStore.Models.Requests.Book;
 using Mapster;

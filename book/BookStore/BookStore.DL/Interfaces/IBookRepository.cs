@@ -1,17 +1,18 @@
-﻿using BookStore.Models.DTO;
+﻿using BookStore.DL.Cache;
+using BookStore.Models.POCO;
 
 namespace BookStore.DL.Interfaces
 {
-    public interface IBookRepository
+    public interface IBookRepository : ICacheRepository<string, Book>
     {
-        void AddBook(Book book);
+        Task<Book?> AddBook(Book book);
 
-        Book? GetBookById(string id);
+        Task<Book?> GetBookById(string id);
 
-        List<Book> GetAllBooks();
+        Task<List<Book>> GetAllBooks();
 
-        void UpdateBook(Book book);
+        Task<Book?> UpdateBook(Book book);
 
-        void DeleteBook(string id);
+        Task DeleteBook(string id);
     }
 }

@@ -1,5 +1,6 @@
-﻿using BookStore.DL.Interfaces;
-using BookStore.Models.DTO;
+﻿using BookStore.BL.Services;
+using BookStore.DL.Interfaces;
+using BookStore.Models.POCO;
 using Moq;
 
 namespace BookStore.Tests.BookTests
@@ -8,13 +9,13 @@ namespace BookStore.Tests.BookTests
     {
         private readonly Mock<IBookRepository> _bookRepositoryMock;
         private readonly Mock<IAuthorRepository> _authorRepositoryMock;
-        private readonly BL.Services.BookService _bookService;
+        private readonly BookService _bookService;
 
         public BookServiceTests()
         {
             _bookRepositoryMock = new Mock<IBookRepository>();
             _authorRepositoryMock = new Mock<IAuthorRepository>();
-            _bookService = new BL.Services.BookService(_bookRepositoryMock.Object, _authorRepositoryMock.Object);
+            _bookService = new BookService(_bookRepositoryMock.Object, _authorRepositoryMock.Object);
         }
 
         [Fact]

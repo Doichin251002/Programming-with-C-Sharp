@@ -1,20 +1,20 @@
-﻿using BookStore.Models.DTO;
+﻿using BookStore.Models.POCO;
 
 namespace BookStore.BL.Interfaces
 {
     public interface IAuthorService
     {
-        void Add(Author author);
+        Task<Author?> Add(Author author);
 
-        Author? GetById(string id);
+        Task<Author?> GetById(string id);
 
-        IEnumerable<Author> GetByIds(IEnumerable<string> authorsIds);
+        Task<IEnumerable<Author>> GetByIds(IEnumerable<string> authorsIds);
 
-        List<Author> GetAll();
+        Task<List<Author>> GetAll();
 
-        void Update(Author author);
+        Task<Author?> Update(Author author);
 
-        void Delete(string id);
+        Task Delete(string id);
 
     }
 }

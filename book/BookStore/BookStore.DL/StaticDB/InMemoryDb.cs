@@ -1,4 +1,4 @@
-﻿using BookStore.Models.DTO;
+﻿using BookStore.Models.POCO;
 
 namespace BookStore.DL.StaticDB
 {
