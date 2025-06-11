@@ -18,9 +18,9 @@ namespace ExternalApiGateway.Controllers
         {
             var locationList = new List<string>()
             {
-                "city1",
-                "city2",
-                "city3"
+                "town1",
+                "town2",
+                "town3"
             };
 
             return locationList;
